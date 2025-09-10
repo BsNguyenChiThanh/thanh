@@ -1,18 +1,18 @@
-@::hr47hf7-random
-@set masver=3.5
+@::r45f3r3-random
+@set masver=3.6
 @setlocal DisableDelayedExpansion
 @echo off
 
 
 
-::  For command line switches, check mass<>grave<.>dev/command_line_switches
+::  For command line switches, check mass()grave(dot)dev/command_line_switches
 ::  If you want to better understand script, read from separate files version. 
 
 
 
 ::============================================================================
 ::
-::   Homepage: mass<>grave<.>dev
+::   Homepage: mass()grave(dot)dev
 ::      Email: mas.help@outlook.com
 ::
 ::============================================================================
@@ -2171,19 +2171,22 @@ call :dk_color %Gray% "Checking SkipRearm                      [Default 0 Value 
 
 if %winbuild% GEQ 9200 if not exist "%SystemRoot%\Servicing\Packages\Microsoft-Windows-*EvalEdition~*.mum" (
 %psc% "Get-WmiObject -Query 'SELECT Description FROM SoftwareLicensingProduct WHERE PartialProductKey IS NOT NULL AND LicenseDependsOn IS NULL' | Select-Object -Property Description" %nul2% | findstr /i "KMS_" %nul1% || (
-for /f "delims=" %%a in ('%psc% "(Get-ScheduledTask -TaskName 'SvcRestartTask' -TaskPath '\Microsoft\Windows\SoftwareProtectionPlatform\').State" %nul6%') do (set taskinfo=%%a)
+for /f "delims=" %%a in ('%psc% "$s=New-Object -ComObject 'Schedule.Service'; $s.Connect(); $state=$s.GetFolder('\Microsoft\Windows\SoftwareProtectionPlatform').GetTask('SvcRestartTask').State; @{0='Unknown';1='Disabled';2='Queued';3='Ready';4='Running'}[$state]" %nul6%') do (set taskinfo=%%a)
 
 echo !taskinfo! | find /i "Ready" %nul% || (
 reg delete "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SoftwareProtectionPlatform" /v "actionlist" /f %nul%
 reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tree\Microsoft\Windows\SoftwareProtectionPlatform\SvcRestartTask" %nul% || set taskinfo=Removed
 if "!taskinfo!"=="" set "taskinfo=Not Found"
 
-call :dk_color %Red% "Checking SvcRestartTask Status          [!taskinfo!, system might deactivate later]"
+call :dk_color %Gray% "Checking SvcRestartTask Status          [!taskinfo!. System might deactivate later.]"
 if not defined showfix (
 echo:
+echo "!taskinfo!" | findstr /i "Removed Not Found" %nul1% && (
+set fixes=%fixes% %mas%in-place_repair_upgrade
+call :dk_color2 %Blue% "Check this webpage for help - " %_Yellow% " %mas%in-place_repair_upgrade"
+) || (
 call :dk_color %Blue% "Reboot your machine using the restart option and run the script again."
-set fixes=%fixes% %mas%troubleshoot
-call :dk_color2 %Blue% "Check this webpage for help - " %_Yellow% " %mas%troubleshoot"
+)
 echo:
 )
 )
@@ -2301,7 +2304,7 @@ exit /b
 ::  2nd column = Generic Retail/OEM/MAK Key
 ::  3rd column = SKU ID
 ::  4th column = Key part number
-::  5th column = Ticket signature value. It's as it is, it's not encoded. (Check mass<>grave<.>dev/hwid#manual-activation to see how it's generated)
+::  5th column = Ticket signature value. It's as it is, it's not encoded. (Check mass()grave(dot)dev/hwid#manual-activation to see how it's generated)
 ::  6th column = 1 = activation is not working (at the time of writing this), 0 = activation is working
 ::  7th column = Key Type
 ::  8th column = WMI Edition ID (For reference only)
@@ -2763,7 +2766,7 @@ call :dk_color %Gray% "Checking Old Office With Sub License    [Found. Update Of
 
 ::========================================================================================================================================
 
-::  mass<>grave<.>dev/office-license-is-not-genuine
+::  mass()grave(dot)dev/office-license-is-not-genuine
 ::  Add registry keys for volume products so that 'non-genuine' banner won't appear 
 ::  Script already is using MAK instead of GVLK so it won't appear anyway, but registry keys are added incase Office installs default GVLK grace key for volume products
 
@@ -3721,7 +3724,6 @@ exit /b
 
 14_4eaff0d0-c6cb-4187-94f3-c7656d49a0aa_Retail________ExcelR_[HSExcelR]
 14_7004b7f0-6407-4f45-8eac-966e5f868bde_Retail________GrooveR
-14_fbf4ac36-31c8-4340-8666-79873129cf40_Retail________OutlookR
 14_133c8359-4e93-4241-8118-30bb18737ea0_Retail________PowerPointR_[HSPowerPointR]
 14_db3bbc9c-ce52-41d1-a46f-1a1d68059119_Retail________WordR_[HSWordR]
 14_dbe3aee0-5183-4ff7-8142-66050173cb01_Retail________SmallBusBasicsR_[SmallBusBasicsMSDNR]
@@ -3750,6 +3752,7 @@ for %%# in (
 14_85e22450-b741-430c-a172-a37962c938af_6GKT2-KMJPK-4RRBF-8VQKB-JB%f%6G6_MAK___________InfoPathVL
 14_3f7aa693-9a7e-44fc-9309-bb3d8e604925_2TG3P-9DB76-4YT99-8RXGD-CW%f%XBP_Retail________OneNoteR_[HSOneNoteR]
 14_6860b31f-6a67-48b8-84b9-e312b3485c4b_CV64P-F4VRH-BJ33D-PH6MR-X6%f%9RY_MAK___________OneNoteVL
+14_fbf4ac36-31c8-4340-8666-79873129cf40_9D8FR-7GYBW-4YG8M-V36JK-VD%f%7CM_Retail________OutlookR
 14_a9aeabd8-63b8-4079-a28e-f531807fd6b8_J8C9M-YXMH2-9CX44-2C3YG-V7%f%692_MAK___________OutlookVL
 14_acb51361-c0db-4895-9497-1831c41f31a6_GMBWM-WVX26-7WHV4-DB43D-WV%f%DY2_Retail________PersonalR_[PersonalDemoR,PersonalPrepaidR]
 14_38252940-718c-4aa6-81a4-135398e53851_HPBQP-RJHDR-Q3472-PT9Q6-PB%f%B72_MAK___________PowerPointVL
@@ -4088,13 +4091,13 @@ $MemoryStream.Close()
 ::
 ::  The files are encoded in base64 to make AIO version.
 ::
-::  mass<>grave<.>dev/ohook
+::  mass()grave(dot)dev/ohook
 ::  Here you can find the files source code and info on how to rebuild the identical sppc.dll files
 ::
 ::  stackoverflow.com/a/35335273
 ::  Here you can check how to extract sppc.dll files from base64
 ::
-::  For any further question, feel free to contact us on mass<>grave<.>dev/contactus
+::  For any further question, feel free to contact us on mass()grave(dot)dev/contactus
 ::
 ::========================================================================================================================================
 ::
@@ -4280,7 +4283,7 @@ set tsids=
 set _resall=0
 
 ::  Choose activation method:
-::  In builds 19041 and later, the script will auto select StaticCID (requires internet). If no internet is detected, it will then auto select the KMS4k method. For builds lower than 19041, the script will auto select ZeroCID.
+::  In builds 26100 and later, the script will auto select StaticCID (requires internet). If no internet is detected, it will then auto select the KMS4k method. For builds lower than 26100, the script will auto select ZeroCID.
 ::  To change the activation method, run the script with the parameters "/Z-SCID", "/Z-ZCID", or "/Z-KMS4k", or modify the option from Auto to SCID, ZCID, or KMS4k in the line below.
 set _actmethod=Auto
 
@@ -4415,8 +4418,8 @@ echo:
 echo        ______________________________________________________________
 echo: 
 call :dk_color2 %_White% "             [1] " %_Green% "Auto"
-echo                  Builds ^>= 19041 - StaticCID (KMS4k if offline)
-echo                  Builds ^<  19041 - ZeroCID
+echo                  Builds ^>= 26100 - StaticCID (KMS4k if offline)
+echo                  Builds ^<  26100 - ZeroCID
 echo              __________________________________________________
 echo: 
 echo              [2] StaticCID
@@ -4425,8 +4428,7 @@ echo                  Not for Windows 7 or older
 echo              __________________________________________________
 echo:
 echo              [3] ZeroCID
-echo                  Works reliably on builds below 19041
-echo                  May break on builds between 19041-26100
+echo                  Works reliably on builds below 26100
 echo                  Does not work on builds above 26100.4188
 echo              __________________________________________________
 echo:
@@ -4538,7 +4540,7 @@ if /i %_actmethod%==ZCID set tsmethod=ZeroCID
 if /i %_actmethod%==KMS4k set tsmethod=KMS4k
 
 if /i %_actmethod%==Auto (
-if %winbuild% GEQ 19041 (
+if %winbuild% GEQ 26100 (
 set tsmethod=StaticCID
 ) else (
 set tsmethod=ZeroCID
@@ -5340,7 +5342,7 @@ call :ts_process
 
 ::========================================================================================================================================
 
-::  mass<>grave<.>dev/office-license-is-not-genuine
+::  mass()grave(dot)dev/office-license-is-not-genuine
 ::  Add registry keys for volume products so that 'non-genuine' banner won't appear 
 
 set "kmskey=HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SoftwareProtectionPlatform\0ff1ce15-a989-479d-af46-f275c6370663"
@@ -6320,7 +6322,7 @@ using System.Xml.Linq;
 }
 #endif
 
-// Common.cs
+// LibTSforge/Common.cs
 namespace LibTSforge
 {
     using System;
@@ -6562,7 +6564,7 @@ namespace LibTSforge
 }
 
 
-// SPP/PKeyConfig.cs
+// LibTSforge/SPP/PKeyConfig.cs
 namespace LibTSforge.SPP
 {
     using System;
@@ -6588,7 +6590,7 @@ namespace LibTSforge.SPP
 
         public bool Contains(int n)
         {
-            return Start <= n && End <= n;
+            return Start <= n && n <= End;
         }
     }
 
@@ -6718,10 +6720,19 @@ namespace LibTSforge.SPP
                     string refActIdStr = configNode.SelectSingleNode("./p:ActConfigId", nsmgr).InnerText;
                     Guid refActId = new Guid(refActIdStr);
                     int group = int.Parse(configNode.SelectSingleNode("./p:RefGroupId", nsmgr).InnerText);
-                    List<KeyRange> keyRanges = ranges[refActIdStr];
+                    List<KeyRange> keyRanges;
+                    ranges.TryGetValue(refActIdStr, out keyRanges);
+
+                    if (keyRanges == null) 
+                    {
+                        continue;
+                    }
 
                     if (keyRanges.Count > 0 && !Products.ContainsKey(refActId))
                     {
+                        PKeyAlgorithm algorithm;
+                        algorithms.TryGetValue(group, out algorithm);
+
                         ProductConfig productConfig = new ProductConfig
                         {
                             GroupId = group,
@@ -6729,7 +6740,7 @@ namespace LibTSforge.SPP
                             Description = configNode.SelectSingleNode("./p:ProductDescription", nsmgr).InnerText,
                             Channel = configNode.SelectSingleNode("./p:ProductKeyType", nsmgr).InnerText,
                             Randomized = configNode.SelectSingleNode("./p:ProductKeyType", nsmgr).InnerText.ToLower() == "true",
-                            Algorithm = algorithms[group],
+                            Algorithm = algorithm,
                             Ranges = keyRanges,
                             ActivationId = refActId
                         };
@@ -6779,7 +6790,7 @@ namespace LibTSforge.SPP
 }
 
 
-// SPP/ProductKey.cs
+// LibTSforge/SPP/ProductKey.cs
 namespace LibTSforge.SPP
 {
     using System;
@@ -7095,7 +7106,7 @@ namespace LibTSforge.SPP
 }
 
 
-// SPP/SLAPI.cs
+// LibTSforge/SPP/SLAPI.cs
 namespace LibTSforge.SPP
 {
     using System;
@@ -7508,7 +7519,7 @@ namespace LibTSforge.SPP
 }
 
 
-// SPP/SPPUtils.cs
+// LibTSforge/SPP/SPPUtils.cs
 namespace LibTSforge.SPP
 {
     using Microsoft.Win32;
@@ -7845,7 +7856,7 @@ namespace LibTSforge.SPP
 }
 
 
-// SPP/SPSys.cs
+// LibTSforge/SPP/SPSys.cs
 namespace LibTSforge.SPP
 {
     using Microsoft.Win32.SafeHandles;
@@ -7892,7 +7903,7 @@ namespace LibTSforge.SPP
 }
 
 
-// Crypto/CryptoUtils.cs
+// LibTSforge/Crypto/CryptoUtils.cs
 namespace LibTSforge.Crypto
 {
     using System;
@@ -8027,7 +8038,7 @@ namespace LibTSforge.Crypto
 }
 
 
-// Crypto/Keys.cs
+// LibTSforge/Crypto/Keys.cs
 namespace LibTSforge.Crypto
 {
     public static class Keys
@@ -8117,7 +8128,7 @@ namespace LibTSforge.Crypto
 }
 
 
-// Crypto/PhysStoreCrypto.cs
+// LibTSforge/Crypto/PhysStoreCrypto.cs
 namespace LibTSforge.Crypto
 {
     using System;
@@ -8202,7 +8213,7 @@ namespace LibTSforge.Crypto
 }
 
 
-// Modifiers/GenPKeyInstall.cs
+// LibTSforge/Modifiers/GenPKeyInstall.cs
 namespace LibTSforge.Modifiers
 {
     using System;
@@ -8413,7 +8424,7 @@ namespace LibTSforge.Modifiers
 }
 
 
-// Modifiers/GracePeriodReset.cs
+// LibTSforge/Modifiers/GracePeriodReset.cs
 namespace LibTSforge.Modifiers
 {
     using System.Collections.Generic;
@@ -8446,7 +8457,7 @@ namespace LibTSforge.Modifiers
 }
 
 
-// Modifiers/KeyChangeLockDelete.cs
+// LibTSforge/Modifiers/KeyChangeLockDelete.cs
 namespace LibTSforge.Modifiers
 {
     using System.Collections.Generic;
@@ -8486,7 +8497,7 @@ namespace LibTSforge.Modifiers
 }
 
 
-// Modifiers/KMSHostCharge.cs
+// LibTSforge/Modifiers/KMSHostCharge.cs
 namespace LibTSforge.Modifiers
 {
     using System;
@@ -8647,7 +8658,7 @@ namespace LibTSforge.Modifiers
 }
 
 
-// Modifiers/RearmReset.cs
+// LibTSforge/Modifiers/RearmReset.cs
 namespace LibTSforge.Modifiers
 {
     using System.Collections.Generic;
@@ -8703,7 +8714,7 @@ namespace LibTSforge.Modifiers
 }
 
 
-// Modifiers/SetIIDParams.cs
+// LibTSforge/Modifiers/SetIIDParams.cs
 namespace LibTSforge.Modifiers
 {
     using PhysicalStore;
@@ -8772,7 +8783,7 @@ namespace LibTSforge.Modifiers
 }
 
 
-// Modifiers/TamperedFlagsDelete.cs
+// LibTSforge/Modifiers/TamperedFlagsDelete.cs
 namespace LibTSforge.Modifiers
 {
     using System.Linq;
@@ -8822,7 +8833,7 @@ namespace LibTSforge.Modifiers
 }
 
 
-// Modifiers/UniqueIdDelete.cs
+// LibTSforge/Modifiers/UniqueIdDelete.cs
 namespace LibTSforge.Modifiers
 {
     using System;
@@ -8881,7 +8892,7 @@ namespace LibTSforge.Modifiers
 }
 
 
-// Activators/KMS4K.cs
+// LibTSforge/Activators/KMS4K.cs
 namespace LibTSforge.Activators
 {
     using System;
@@ -9092,7 +9103,7 @@ namespace LibTSforge.Activators
 }
 
 
-// Activators/ZeroCID.cs
+// LibTSforge/Activators/ZeroCID.cs
 namespace LibTSforge.Activators
 {
     using System;
@@ -9281,7 +9292,7 @@ namespace LibTSforge.Activators
 }
 
 
-// TokenStore/Common.cs
+// LibTSforge/TokenStore/Common.cs
 namespace LibTSforge.TokenStore
 {
     using System.Collections.Generic;
@@ -9351,7 +9362,7 @@ namespace LibTSforge.TokenStore
 }
 
 
-// TokenStore/ITokenStore.cs
+// LibTSforge/TokenStore/ITokenStore.cs
 namespace LibTSforge.TokenStore
 {
     using System;
@@ -9371,7 +9382,7 @@ namespace LibTSforge.TokenStore
 }
 
 
-// TokenStore/TokenStoreModern.cs
+// LibTSforge/TokenStore/TokenStoreModern.cs
 namespace LibTSforge.TokenStore
 {
     using System;
@@ -9657,7 +9668,7 @@ namespace LibTSforge.TokenStore
 }
 
 
-// PhysicalStore/Common.cs
+// LibTSforge/PhysicalStore/Common.cs
 namespace LibTSforge.PhysicalStore
 {
     using System.Runtime.InteropServices;
@@ -9688,7 +9699,7 @@ namespace LibTSforge.PhysicalStore
 }
 
 
-// PhysicalStore/IPhysicalStore.cs
+// LibTSforge/PhysicalStore/IPhysicalStore.cs
 namespace LibTSforge.PhysicalStore
 {
     using System;
@@ -9783,7 +9794,7 @@ namespace LibTSforge.PhysicalStore
 }
 
 
-// PhysicalStore/PhysicalStoreModern.cs
+// LibTSforge/PhysicalStore/PhysicalStoreModern.cs
 namespace LibTSforge.PhysicalStore
 {
     using System;
@@ -10201,7 +10212,7 @@ namespace LibTSforge.PhysicalStore
 }
 
 
-// PhysicalStore/PhysicalStoreVista.cs
+// LibTSforge/PhysicalStore/PhysicalStoreVista.cs
 namespace LibTSforge.PhysicalStore
 {
     using System;
@@ -10560,7 +10571,7 @@ namespace LibTSforge.PhysicalStore
 }
 
 
-// PhysicalStore/PhysicalStoreWin7.cs
+// LibTSforge/PhysicalStore/PhysicalStoreWin7.cs
 namespace LibTSforge.PhysicalStore
 {
     using System;
@@ -10937,7 +10948,7 @@ namespace LibTSforge.PhysicalStore
 }
 
 
-// PhysicalStore/VariableBag.cs
+// LibTSforge/PhysicalStore/VariableBag.cs
 namespace LibTSforge.PhysicalStore
 {
     using System;
@@ -13370,7 +13381,7 @@ if %winbuild% GEQ 9200 (
 for /f "skip=2 tokens=2*" %%a in ('"reg query HKLM\SOFTWARE\Microsoft\Office\ClickToRun /v InstallPath" %nul6%') do if exist "%%b\root\Licenses16\ProPlus*.xrm-ms" set "_C16R=1"
 for /f "skip=2 tokens=2*" %%a in ('"reg query HKLM\SOFTWARE\Microsoft\Office\ClickToRun /v InstallPath /reg:32" %nul6%') do if exist "%%b\root\Licenses16\ProPlus*.xrm-ms" set "_C16R=1"
 if defined _C16R (
-REM  mass<>grave<.>dev/office-license-is-not-genuine
+REM  mass()grave(dot)dev/office-license-is-not-genuine
 set _server=10.0.0.10
 call :_taskregserv
 echo Keeping the non-existent IP address 10.0.0.10 as %KS% Server.
@@ -13715,7 +13726,7 @@ exit /b
 
 ::============================================================================
 ::
-::   Homepage: mass<>grave<.>dev
+::   Homepage: mass()grave(dot)dev
 ::      Email: mas.help@outlook.com
 ::
 ::============================================================================
